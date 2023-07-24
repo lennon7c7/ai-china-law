@@ -42,27 +42,7 @@ export default async function handler(req: NextRequest) {
 
     const supabaseClient = createClient(supabaseUrl, supabaseServiceKey)
 
-    // Moderate the content to comply with OpenAI T&C
     const sanitizedQuery = query.trim()
-    const moderationResponse = await fetch('https://api.openai.com/v1/moderations', {
-      method: 'POST',
-      headers: {
-        Authorization: `Bearer ${openAiKey}`,
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
-        input: sanitizedQuery,
-      }),
-    }).then((res) => res.json())
-
-    const [results] = moderationResponse.results
-
-    if (results.flagged) {
-      throw new UserError('Flagged content', {
-        flagged: true,
-        categories: results.categories,
-      })
-    }
 
     const embeddingResponse = await fetch('https://api.openai.com/v1/embeddings', {
       method: 'POST',
